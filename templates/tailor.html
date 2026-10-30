@@ -1,0 +1,198 @@
+
+{% extends "base.html" %}
+{% block title %}Match Job Requirements — SmartResume{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">JOB MATCH STUDIO</span>
+        <h1>Tailor your resume <span class="wave">✧</span></h1>
+        <p class="muted">Compare your resume with a company's job requirements.</p>
+    </div>
+</div>
+
+<div class="tailor-layout">
+    <section class="panel tailor-input-panel">
+        <div class="panel-heading">
+            <span class="panel-icon violet">⌕</span>
+            <div>
+                <h2>Company requirements</h2>
+                <p>Choose a resume and paste or upload the job requirements.</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="tailor-form">
+            <input type="hidden" name="action" value="analyze">
+
+            <label>Choose your resume source
+                <select name="source">
+                    <option value="saved">A saved resume</option>
+                    <option value="draft">My current working draft</option>
+                </select>
+            </label>
+
+            <label>Select a saved resume
+                <select name="resume_id">
+                    <option value="">Select a saved resume</option>
+                    {% for r in resumes %}
+                    <option value="{{ r.id }}"
+                        {% if selected_id|string == r.id|string %}selected{% endif %}>
+                        {{ r.title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Paste job description / requirements
+                <textarea name="requirements_text" rows="7"
+                    placeholder="Example: Looking for a Python developer with Flask, SQL, REST APIs, Git, and problem-solving skills..."></textarea>
+            </label>
+
+            <div class="upload-drop tailor-drop">
+                <span class="upload-cloud">↑</span>
+                <b>Or upload the company's requirements</b>
+                <small>PDF, DOCX, TXT, PNG, JPG, JPEG · Maximum 5 MB</small>
+                <input type="file" name="requirements_file"
+                    accept=".pdf,.docx,.txt,.png,.jpg,.jpeg">
+            </div>
+
+            <button class="btn btn-full" type="submit">
+                Compare requirements <span>→</span>
+            </button>
+        </form>
+
+        {% if not resumes %}
+        <div class="notice">
+            You have no saved resumes yet. You can still use your current working draft.
+        </div>
+        {% endif %}
+    </section>
+
+    <aside class="panel tailor-how">
+        <span class="eyebrow">HOW IT WORKS</span>
+        <h2>Make your application more relevant.</h2>
+
+        <div class="info-feature">
+            <span class="feature-icon violet">1</span>
+            <div>
+                <b>Choose your resume</b>
+                <p>Use a saved resume or your current working draft.</p>
+            </div>
+        </div>
+
+        <div class="info-feature">
+            <span class="feature-icon blue">2</span>
+            <div>
+                <b>Add job requirements</b>
+                <p>Paste the job description or upload a requirements file.</p>
+            </div>
+        </div>
+
+        <div class="info-feature">
+            <span class="feature-icon mint">3</span>
+            <div>
+                <b>Review and save</b>
+                <p>Check matched and missing terms, edit your suggested content, and save a separate copy.</p>
+            </div>
+        </div>
+
+        <div class="notice">
+            The match percentage is a simple keyword overlap estimate, not an official ATS score.
+            Add missing skills only if you genuinely have them.
+        </div>
+    </aside>
+</div>
+
+{% if result %}
+<div class="section-heading result-heading">
+    <div>
+        <span class="eyebrow">MATCH RESULTS</span>
+        <h2>{{ result.resume_title }} × Company requirements</h2>
+        <p class="muted">Use this as a checklist, not as a guarantee of selection.</p>
+    </div>
+</div>
+
+<div class="tailor-results">
+    <section class="panel match-score-panel">
+        <span class="eyebrow">KEYWORD OVERLAP</span>
+
+        <div class="big-score">
+            <div class="score-ring" style="--score:{{ result.score }}%">
+                <div>
+                    <b>{{ result.score }}%</b>
+                    <small>Keyword match</small>
+                </div>
+            </div>
+        </div>
+
+        <p class="muted small">
+            This score compares words in the job requirements with your resume content.
+        </p>
+
+        <h3>Found in your resume</h3>
+        {% if result.matched %}
+        <div class="keyword-pills">
+            {% for word in result.matched %}
+            <span class="keyword matched">{{ word }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted small">No clear keyword overlap detected.</p>
+        {% endif %}
+
+        <h3>Not found yet</h3>
+        {% if result.missing %}
+        <div class="keyword-pills">
+            {% for word in result.missing %}
+            <span class="keyword missing">{{ word }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted small">No missing terms from this checklist were detected.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <div class="panel-heading">
+            <span class="panel-icon mint">✎</span>
+            <div>
+                <h2>Suggested tailored copy</h2>
+                <p>Review every field before saving.</p>
+            </div>
+        </div>
+
+        <form method="post" class="tailored-save-form">
+            <input type="hidden" name="action" value="save">
+            <input type="hidden" name="source" value="{{ result.source }}">
+            <input type="hidden" name="resume_id" value="{{ result.resume_id }}">
+
+            <label>New resume title
+                <input name="tailored_title"
+                    value="{{ result.tailored_title }}" required>
+            </label>
+
+            <label>Suggested summary
+                <textarea name="tailored_summary" rows="5">{{ result.tailored_summary }}</textarea>
+            </label>
+
+            <label>Skills from your original resume
+                <textarea name="tailored_skills" rows="3">{{ result.tailored_skills }}</textarea>
+                <small class="field-help">
+                    Only list skills you actually have.
+                </small>
+            </label>
+
+            <button class="btn btn-full" type="submit">
+                Save as a separate tailored resume <span>→</span>
+            </button>
+        </form>
+
+        <div class="suggestion-list">
+            {% for tip in result.tips %}
+            <p>✧ {{ tip }}</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endif %}
+{% endblock %}

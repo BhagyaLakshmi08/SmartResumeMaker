@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SmartResume{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% if current_user and request.endpoint not in ['index','login','register'] %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">✦</span> SmartResume</a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="{% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">▦ <span>Dashboard</span></a>
+      <a class="{% if request.endpoint in ['resume_form','resume_detail'] %}active{% endif %}" href="{{ url_for('resume_form') }}">▤ <span>Resume Atelier</span></a>
+      <a class="{% if request.endpoint == 'resumes' %}active{% endif %}" href="{{ url_for('resumes') }}">▣ <span>My Resumes</span></a>
+      <a class="{% if request.endpoint == 'analyze' %}active{% endif %}" href="{{ url_for('analyze') }}">⌁ <span>Resume Strength</span></a>
+      <a class="{% if request.endpoint == 'tailor_resume' %}active{% endif %}" href="{{ url_for('tailor_resume') }}">✧ <span>Match Job Requirements</span></a>
+    </nav>
+    <div class="side-bottom">
+      <div class="side-label">ACCOUNT</div>
+      <a href="{{ url_for('dashboard') }}">♙ <span>Profile</span></a>
+      <a href="{{ url_for('logout') }}">↪ <span>Log out</span></a>
+      <div class="privacy-note">⌑ Your work stays private<br><small>Saved securely to your account</small></div>
+    </div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><span class="mobile-brand">✦ SmartResume</span><span class="topbar-spacer"></span><span class="avatar">{{ current_user.name[:1]|upper }}</span><span class="user-name">{{ current_user.name }}</span></header>
+    <div class="page-content">
+{% else %}
+  <header class="public-nav">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">✦</span> SmartResume</a>
+    <nav><a href="{{ url_for('index') }}#features">Features</a><a href="{{ url_for('index') }}#how">How it works</a><a class="nav-login" href="{{ url_for('login') }}">Log in</a><a class="btn btn-small" href="{{ url_for('register') }}">Get started</a></nav>
+  </header>
+  <main class="public-main">
+{% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+{% if current_user and request.endpoint not in ['index','login','register'] %}
+    </div>
+  </main>
+</div>
+{% else %}
+  </main>
+  <footer class="public-footer">© {{ year }} SmartResume · Build a resume that tells your story.</footer>
+{% endif %}
+<script>
+document.querySelectorAll('[data-confirm]').forEach(function(el){el.addEventListener('click',function(e){if(!confirm(el.dataset.confirm)){e.preventDefault();}});});
+</script>
+</body>
+</html>

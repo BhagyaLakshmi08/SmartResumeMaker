@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}SmartResume — Build your next opportunity{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="pulse"></span> YOUR NEXT CHAPTER STARTS HERE</span>
+    <h1>Build your dream resume <span>with confidence.</span></h1>
+    <p class="hero-lead">Write your details and watch your resume take shape instantly. Save it, improve it, and download it when ready.</p>
+    <div class="hero-actions"><a class="btn" href="{{ url_for('register') }}">Create my resume <span>↗</span></a><a class="btn btn-ghost" href="#features">Explore features</a></div>
+    <div class="trust-row"><span>✓ Live preview</span><span>✓ Save your work</span><span>✓ PDF export</span></div>
+  </div>
+  <div class="hero-art">
+    <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+    <div class="floating-tag tag-ai">✧ Smart suggestions</div><div class="floating-tag tag-ats">◎ ATS-friendly layout</div>
+    <div class="resume-preview">
+      <div class="resume-top"><div class="fake-avatar">B</div><div><b>YOUR NAME</b><small>Software Developer</small></div><span class="resume-dots">•••</span></div>
+      <div class="resume-line long"></div><div class="resume-line medium"></div>
+      <div class="resume-section">PROFILE</div><div class="resume-line long"></div><div class="resume-line long"></div><div class="resume-line short"></div>
+      <div class="resume-section">EXPERIENCE</div><div class="resume-line long"></div><div class="resume-line medium"></div><div class="resume-line long"></div>
+      <div class="resume-section">SKILLS</div><div class="skill-pills"><i>Python</i><i>SQL</i><i>Problem solving</i></div>
+    </div>
+    <div class="strength-float"><div class="mini-ring">78<span>%</span></div><div><b>Resume strength</b><small>Room to shine brighter</small></div></div>
+  </div>
+</section>
+<section class="feature-strip" id="features">
+  <article><div class="feature-icon violet">▤</div><h3>Live resume editor</h3><p>See every change as you type.</p></article>
+  <article><div class="feature-icon mint">⌁</div><h3>Resume feedback</h3><p>Get a quick strength check and useful tips.</p></article>
+  <article><div class="feature-icon amber">▣</div><h3>All in one place</h3><p>Save and update your resume versions.</p></article>
+  <article><div class="feature-icon blue">♧</div><h3>Private workspace</h3><p>Your saved resumes stay in your account.</p></article>
+</section>
+<section class="how-section" id="how"><div><span class="eyebrow">MADE FOR YOUR NEXT STEP</span><h2>Create. Preview. <span>Download.</span></h2></div><div class="how-steps"><div><b>01</b><h3>Sign in</h3><p>Open your workspace.</p></div><div><b>02</b><h3>Add your details</h3><p>Enter education, skills, and projects.</p></div><div><b>03</b><h3>Preview & save</h3><p>Review the live preview and export PDF.</p></div></div></section>
+<div class="bottom-cta"><div><h2>Your next opportunity starts with a clear resume.</h2><p>Build yours in a few simple steps.</p></div><a class="btn" href="{{ url_for('register') }}">Get started free ↗</a></div>
+{% endblock %}

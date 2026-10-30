@@ -1,0 +1,209 @@
+
+{% extends "base.html" %}
+
+{% block title %}Resume Strength — SmartResume{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">SMART CHECK</span>
+        <h1>Resume strength</h1>
+        <p class="muted">Check your resume and discover ways to improve it.</p>
+    </div>
+</div>
+
+<div class="analysis-layout">
+
+    <!-- ANALYZE WORKING DRAFT -->
+    <section class="panel upload-panel">
+        <div class="upload-symbol">✧</div>
+
+        <span class="eyebrow">QUICK ANALYSIS</span>
+        <h2>Analyze your working draft</h2>
+
+        <p class="muted">
+            Already building your resume? Analyze your automatically
+            saved working draft directly without creating a permanent copy.
+        </p>
+
+        <form method="post" action="{{ url_for('analyze') }}">
+            <input type="hidden" name="action" value="draft">
+
+            <button class="btn btn-full" type="submit">
+                Analyze my draft →
+            </button>
+        </form>
+
+        <div class="privacy-line">
+            Your latest working draft from your account will be used for analysis.
+        </div>
+    </section>
+
+    <!-- UPLOAD RESUME -->
+    <section class="panel upload-panel">
+        <div class="upload-symbol">↑</div>
+
+        <span class="eyebrow">FILE ANALYSIS</span>
+        <h2>Upload your resume</h2>
+
+        <p class="muted">
+            Upload an existing resume to review common quality signals.
+        </p>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              class="upload-form"
+              action="{{ url_for('analyze') }}">
+
+            <label class="upload-drop">
+                <input type="file"
+                       name="resume_file"
+                       accept=".pdf,.docx,.txt"
+                       required>
+
+                <span class="upload-cloud">⇧</span>
+                <b>Choose a file to upload</b>
+                <small>PDF, DOCX, or TXT · Maximum 5 MB</small>
+            </label>
+
+            <button class="btn btn-full" type="submit">
+                Analyze uploaded resume →
+            </button>
+        </form>
+
+        <div class="privacy-line">
+            Your uploaded file is processed by this app and stored on the
+            server for analysis. Delete it from the uploads folder when
+            no longer needed.
+        </div>
+    </section>
+
+</div>
+
+<!-- WHAT YOU WILL GET -->
+<section class="panel analysis-info" style="margin-top: 24px;">
+
+    <span class="eyebrow">WHAT YOU'LL GET</span>
+    <h2>Feedback you can act on</h2>
+
+    <div class="info-feature">
+        <span class="feature-icon mint">✓</span>
+        <div>
+            <b>Section checklist</b>
+            <p>
+                See whether common resume sections and contact details
+                are present.
+            </p>
+        </div>
+    </div>
+
+    <div class="info-feature">
+        <span class="feature-icon amber">↗</span>
+        <div>
+            <b>Strength estimate</b>
+            <p>
+                A percentage based on a transparent checklist,
+                not an AI hiring decision.
+            </p>
+        </div>
+    </div>
+
+    <div class="info-feature">
+        <span class="feature-icon violet">✧</span>
+        <div>
+            <b>Improvement ideas</b>
+            <p>
+                Get specific reminders to make your resume clearer
+                and more complete.
+            </p>
+        </div>
+    </div>
+
+    <div class="notice">
+        Note: This prototype does not guarantee ATS compatibility,
+        detect every formatting issue, or predict hiring outcomes.
+        Scanned PDFs may not contain extractable text.
+    </div>
+
+</section>
+
+<!-- ANALYSIS RESULTS -->
+{% if result %}
+
+<div class="section-heading result-heading">
+    <div>
+        <span class="eyebrow">ANALYSIS COMPLETE</span>
+        <h2>Results for {{ result.filename }}</h2>
+    </div>
+</div>
+
+<div class="result-grid">
+
+    <section class="panel strength-panel">
+
+        <span class="eyebrow">OVERALL STRENGTH</span>
+
+        <div class="big-score">
+            <div class="score-ring"
+                 style="--score:{{ result.score }}%">
+
+                <div>
+                    <b>{{ result.score }}%</b>
+                    <small>
+                        {{ 'Strong start' if result.score >= 75
+                        else 'Good progress' if result.score >= 50
+                        else 'Room to improve' }}
+                    </small>
+                </div>
+
+            </div>
+        </div>
+
+        <p class="muted small">
+            Based on 10 simple content checks.
+        </p>
+
+        <h3>Key checks</h3>
+
+        <ul class="check-list">
+            {% for f in result.findings %}
+            <li>
+                <span class="{{ 'check-ok' if f.ok else 'check-no' }}">
+                    {{ '✓' if f.ok else '!' }}
+                </span>
+                {{ f.label }}
+            </li>
+            {% endfor %}
+        </ul>
+
+    </section>
+
+    <section class="panel">
+
+        <h2>Suggestions for you</h2>
+
+        <p class="muted">
+            Use the tips that fit your experience and target role.
+        </p>
+
+        {% for title, desc in result.suggestions %}
+
+        <div class="suggestion">
+            <span class="suggestion-bullet">✧</span>
+
+            <div>
+                <b>{{ title }}</b>
+                <p>{{ desc }}</p>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

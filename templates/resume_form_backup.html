@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if item else 'Create' }} resume — Resume Atelier{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">RESUME ATELIER</span><h1>{{ 'Refine your resume' if item else 'Build a resume that feels like you' }}</h1><p class="muted">Type on the left. Your resume updates on the right.</p></div><a class="btn btn-ghost" href="{{ url_for('resumes') }}">My resumes</a></div>
+<div class="stepper"><div class="step active"><span>1</span><b>Details</b></div><i></i><div class="step active"><span>2</span><b>Live preview</b></div><i></i><div class="step"><span>3</span><b>Save</b></div></div>
+<form method="post" class="atelier-editor-layout" id="atelier-form">
+  <div class="atelier-form-column"><div class="builder-main">
+    <section class="panel"><div class="panel-heading"><span class="panel-icon violet">♙</span><div><h2>Personal information</h2><p>Make it easy for employers to contact you.</p></div></div>
+      <div class="form-grid"><label>Resume title *<input name="title" required value="{{ (form.title if form else item.title if item else '') }}" placeholder="e.g. Software Developer Resume"></label><label>Full name *<input id="field-full_name" name="full_name" required value="{{ (form.full_name if form else item.full_name if item else current_user.name) }}" placeholder="Your full name"></label><label>Email address<input id="field-email" name="email" type="email" value="{{ (form.email if form else item.email if item else current_user.email) }}" placeholder="you@example.com"></label><label>Phone number<input id="field-phone" name="phone" value="{{ (form.phone if form else item.phone if item else '') }}" placeholder="+91 98765 43210"></label><label class="full">Location<input id="field-location" name="location" value="{{ (form.location if form else item.location if item else '') }}" placeholder="City, Country"></label><label class="full">Professional title<input id="field-professional_title" name="professional_title" value="{{ (form.professional_title if form else item.professional_title if item else '') }}" placeholder="e.g. Computer Science Student / Python Developer"></label><label class="full">Professional summary<textarea id="field-summary" name="summary" rows="4" placeholder="Write 2–4 lines about your strengths, interests, and career goals.">{{ (form.summary if form else item.summary if item else '') }}</textarea><small class="field-help">Tip: Focus on what you can contribute, not only what you want.</small></label></div>
+    </section>
+    <section class="panel"><div class="panel-heading"><span class="panel-icon blue">▤</span><div><h2>Education</h2><p>Degree, institution, year, and relevant coursework.</p></div></div><label>Education details<textarea id="field-education" name="education" rows="4" placeholder="B.Tech in Computer Science — College Name&#10;Expected graduation: 2027&#10;Relevant coursework: Data Structures, DBMS">{{ (form.education if form else item.education if item else '') }}</textarea></label></section>
+    <section class="panel"><div class="panel-heading"><span class="panel-icon mint">✧</span><div><h2>Skills & experience</h2><p>Show the tools you know and the work you have done.</p></div></div><label>Skills<textarea id="field-skills" name="skills" rows="3" placeholder="Python, Flask, SQLite, HTML, CSS, teamwork...">{{ (form.skills if form else item.skills if item else '') }}</textarea></label><div class="form-grid"><label class="full">Experience / internships<textarea id="field-experience" name="experience" rows="4" placeholder="Role — Organization | Dates&#10;• What you did and the impact of your work">{{ (form.experience if form else item.experience if item else '') }}</textarea></label><label class="full">Projects<textarea id="field-projects" name="projects" rows="4" placeholder="Project name — technologies used&#10;• What problem it solves and what you contributed">{{ (form.projects if form else item.projects if item else '') }}</textarea></label></div></section>
+    <div class="form-actions"><a class="btn btn-ghost" href="{{ url_for('resumes') }}">Cancel</a><button class="btn" type="submit">Save resume <span>→</span></button></div>
+  </div></div>
+  <aside class="atelier-preview-column"><div class="atelier-preview-toolbar"><div><span class="eyebrow">LIVE PREVIEW</span><div style="font-size:12px;font-weight:700;color:#263653;margin-top:4px">Updates as you type</div></div><div class="atelier-preview-actions"><button class="btn btn-small" type="button" onclick="window.print()">Save as PDF</button><label>Theme <select id="atelier-theme"><option value="modern">Modern</option><option value="classic">Classic</option><option value="minimal">Minimal</option><option value="technical">Technical</option><option value="executive">Executive</option></select></label></div></div>
+    <article class="atelier-paper theme-modern" id="atelier-paper"><header class="atelier-paper-header"><h2 id="preview-name">{{ (form.full_name if form else item.full_name if item else current_user.name) }}</h2><div class="atelier-role" id="preview-role">{{ (form.professional_title if form else item.professional_title if item else 'Professional title') }}</div><div class="atelier-contact" id="preview-contact">{{ (form.email if form else item.email if item else current_user.email) }} · {{ (form.phone if form else item.phone if item else '') }} · {{ (form.location if form else item.location if item else '') }}</div></header>
+      <section class="atelier-paper-section"><h3>Profile</h3><p id="preview-summary">{{ (form.summary if form else item.summary if item else 'Your professional summary will appear here.') }}</p></section>
+      <section class="atelier-paper-section"><h3>Education</h3><p id="preview-education">{{ (form.education if form else item.education if item else 'Add your education details.') }}</p></section>
+      <section class="atelier-paper-section"><h3>Skills</h3><p id="preview-skills">{{ (form.skills if form else item.skills if item else 'Add relevant skills.') }}</p></section>
+      <section class="atelier-paper-section"><h3>Experience</h3><p id="preview-experience">{{ (form.experience if form else item.experience if item else 'Add internships or experience.') }}</p></section>
+      <section class="atelier-paper-section"><h3>Projects</h3><p id="preview-projects">{{ (form.projects if form else item.projects if item else 'Add your projects.') }}</p></section>
+    </article>
+    <p class="atelier-preview-note">Your changes appear instantly. Save to keep this resume in your account.</p>
+  </aside>
+</form>
+<script>
+(function(){
+ const mapping={full_name:'preview-name',professional_title:'preview-role',summary:'preview-summary',education:'preview-education',skills:'preview-skills',experience:'preview-experience',projects:'preview-projects'};
+ function value(name){const el=document.getElementById('field-'+name);return el?el.value.trim():'';}
+ function setText(id,text,fallback){const el=document.getElementById(id);if(el)el.textContent=text||fallback;}
+ function updatePreview(){
+  Object.keys(mapping).forEach(function(name){const fallback={full_name:'Your name',professional_title:'Professional title',summary:'Your professional summary will appear here.',education:'Add your education details.',skills:'Add relevant skills.',experience:'Add internships or experience.',projects:'Add your projects.'}[name];setText(mapping[name],value(name),fallback);});
+  const contact=['email','phone','location'].map(value).filter(Boolean).join(' · ');setText('preview-contact',contact,'Add email, phone, and location');
+ }
+ document.querySelectorAll('#atelier-form input,#atelier-form textarea').forEach(function(el){el.addEventListener('input',updatePreview);});
+ document.getElementById('atelier-theme').addEventListener('change',function(e){document.getElementById('atelier-paper').className='atelier-paper theme-'+e.target.value;});
+ updatePreview();
+})();
+</script>
+{% endblock %}
